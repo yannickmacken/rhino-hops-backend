@@ -1,8 +1,9 @@
-import compute_rhino3d.Util
-import compute_rhino3d.Grasshopper as gh
-import rhino3dm
 import json
 from typing import Any, List
+
+import compute_rhino3d.Grasshopper as gh
+import compute_rhino3d.Util
+import rhino3dm
 
 
 def find_values(json_repr: Any, key_to_find: str, value_to_find: str) -> List[str]:
@@ -57,34 +58,22 @@ def main():
     # Set the compute_rhino3d.Util.url to your server
     compute_rhino3d.Util.url = 'http://localhost:6500/'
 
+    # Read input parameters from a JSON file
+    with open('C:\\Users\\viktor\\OneDrive - VIKTOR\\Hops grasshopper integration\\workdir\\input.json') as f:
+        input_params = json.load(f)
+
     # Create DataTree for each input
     input_trees = []
-    tree = gh.DataTree("count")
-    append_to_tree(tree, {0}, "6")
-    input_trees.append(tree)
-
-    tree = gh.DataTree("truss_height")
-    append_to_tree(tree, {0}, "6")
-    input_trees.append(tree)
-
-    tree = gh.DataTree("truss_depth")
-    append_to_tree(tree, {0}, "18")
-    input_trees.append(tree)
-
-    tree = gh.DataTree("truss_width")
-    append_to_tree(tree, {0}, "18")
-    input_trees.append(tree)
-
-    tree = gh.DataTree("spans")
-    append_to_tree(tree, {0}, "14")
-    input_trees.append(tree)
-
-    tree = gh.DataTree("void_spans")
-    append_to_tree(tree, {0}, "1")
-    input_trees.append(tree)
+    for param, value in input_params.items():
+        tree = gh.DataTree(param)
+        append_to_tree(tree, {0}, str(value))
+        input_trees.append(tree)
 
     # Evaluate the Grasshopper definition
-    output = gh.EvaluateDefinition('C:\\Users\\viktor\\OneDrive - VIKTOR\\Hops grasshopper integration\\truss.gh', input_trees)
+    output = gh.EvaluateDefinition(
+        'C:\\Users\\viktor\\OneDrive - VIKTOR\\Hops grasshopper integration\\workdir\\truss.gh',
+        input_trees
+    )
 
     # Handle any errors or warnings
     errors = output['errors']
@@ -103,13 +92,11 @@ def main():
 
     archive3dm_data_values = find_values(output, 'data', 'archive3dm')
     for value in archive3dm_data_values:
-        print(value)
         obj = rhino3dm.CommonObject.Decode(json.loads(value))
-        print(obj)
-        file.Objects.AddBrep(obj)  # Add your Brep object to the file
+        file.Objects.AddMesh(obj)  # Add your Brep object to the file
 
     # Save the file to your desired location
-    file.Write('C:\\Users\\viktor\\OneDrive - VIKTOR\\Hops grasshopper integration\\output.3dm', 7)
+    file.Write('C:\\Users\\viktor\\OneDrive - VIKTOR\\Hops grasshopper integration\\workdir\\output.3dm', 7)
     print('wrote 3dm file to folder')
 
 
