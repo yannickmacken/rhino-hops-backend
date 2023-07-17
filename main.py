@@ -59,7 +59,7 @@ def main():
     compute_rhino3d.Util.url = 'http://localhost:6500/'
 
     # Read input parameters from a JSON file
-    with open('C:\\Users\\viktor\\OneDrive - VIKTOR\\Hops grasshopper integration\\workdir\\input.json') as f:
+    with open('C:\\path\\to\\your\\input.json') as f:
         input_params = json.load(f)
 
     # Create DataTree for each input
@@ -71,7 +71,7 @@ def main():
 
     # Evaluate the Grasshopper definition
     output = gh.EvaluateDefinition(
-        'C:\\Users\\viktor\\OneDrive - VIKTOR\\Hops grasshopper integration\\workdir\\truss.gh',
+        'C:\\path\\to\\your\\grasshopper_definition.gh',
         input_trees
     )
 
@@ -96,7 +96,7 @@ def main():
         file.Objects.AddMesh(obj)  # Add your Brep object to the file
 
     # Save the file to your desired location
-    file.Write('C:\\Users\\viktor\\OneDrive - VIKTOR\\Hops grasshopper integration\\workdir\\output.3dm', 7)
+    file.Write('C:\\path\\to\\your\\output.3dm', 7)
     print('wrote 3dm file to folder')
 
 
